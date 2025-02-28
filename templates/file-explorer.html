@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-300 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-light-blue rounded-2xl border-2 border-solid border-[#3b82f6] shadow-xl w-full max-w-4xl p-6">
+        <h1 class="text-3xl font-bold text-center text-blue-800 mb-4">File Explorer</h1>
+        
+        <!-- Back Button -->
+        {% if back_url %}
+        <a href="{{ back_url }}" class="mb-10 inline-block text-white bg-blue-600 hover:bg-blue-700 text-xl px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105">
+            ⬅ Go Back
+        </a>
+        {% endif %}
+
+        <!-- File/Folder Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4" id="grid-container">
+            {% for item in items %}
+            <div class="group relative bg-gray-50 border border-gray-200 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                 data-url="{{ item.url }}" 
+                 data-is-file="{{ item.is_file }}">
+                <div class="flex flex-col items-center text-center">
+                    <span class="text-6xl text-blue-600 mb-2">{{ item.icon }}</span>
+                    <span class="text-sm font-semibold text-gray-800 mb-1">{{ item.name }}</span>
+                    <span class="text-xs text-gray-500">
+                        {{ item.size }} bytes ({{ "File" if item.is_file else "Folder" }})
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Custom Context Menu -->
+        <div id="context-menu" class="absolute hidden bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+            <ul class="py-1">
+                <li id="download-option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700">Download</li>
+                <li id="open-option" class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700">Open</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="/static/js/file-explorer.js"></script>
+</body>
+</html>

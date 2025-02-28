@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zip File Upload</title>
+    <!-- Include Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-[#f0f4ff] to-[#d9e8ff] flex justify-center items-center min-h-screen text-white">
+    <div class="container bg-from-[#a0b8d8] to-[#8fa8c8] border-2 border-solid border-[#3b82f6] p-10 rounded-2xl shadow-xl max-w-xl w-full animate-fade-in ">
+        <h1 class="text-3xl font-bold text-[#1e40af] mb-7 text-center">Upload Your ZIP File</h1>
+        <form id="uploadForm" enctype="multipart/form-data" class="space-y-4">
+            <div class="upload-box border-2 border-dashed border-[#3b82f6] p-10 text-center cursor-pointer transition-all duration-300 rounded-xl hover:border-[#1d4ed8] hover:bg-blue-200" onclick="document.getElementById('fileInput').click()">
+                <p id="fileName" class="text-[#4b5563] font-medium">Drag & drop your ZIP file here or click to select manually.</p>
+                <input type="file" id="fileInput" name="file" accept=".zip" class="hidden" />
+            </div>
+            <button type="submit" class="w-full py-3 px-6 bg-[#3b82f6] text-white font-semibold text-2xl rounded-lg shadow-md transition-all duration-300 hover:bg-[#1d4ed8] hover:shadow-lg hover:-translate-y-1">
+                📤 Upload File
+            </button>
+        </form>
+        <div id="message" class="mt-5 text-[#16a34a] font-medium"></div>
+    </div>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
