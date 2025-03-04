@@ -11,7 +11,7 @@ import aiofiles
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from config import config
-
+from router import zip_uploader
 app = FastAPI()
 
 # Initialize template engine and static files
@@ -164,6 +164,8 @@ async def download_folder(unique_id: str):
                     zipf.write(file, file.relative_to(folder_path))
 
     return FileResponse(zip_path, filename=f"{unique_id}.zip")
+
+app.include_router(zip_uploader.router ,prefix="/zip-uploader", tags=["Zip Uploader"] )
 
 if __name__ == "__main__":
     uvicorn.run(app, host=config.HOST, port=config.PORT)
