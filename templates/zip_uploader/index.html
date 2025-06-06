@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zip File Uploader</title>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <main class="bg-gradient-to-br from-[#f0f4ff] to-[#d9e8ff] flex justify-center items-center min-h-screen">
+        <div class="container mx-auto max-w-4xl px-4 py-8">
+            <!-- Context Menu (Hidden by default) -->
+            <h1 class="text-3xl font-bold text-[#1e40af] mb-7 text-center">Upload Your ZIP File</h1>
+            <div id="context-menu" class="fixed hidden bg-white shadow-lg rounded-md overflow-hidden z-50 w-48 border">
+                <div class="py-1 text-sm">
+                    <a id="context-open" href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <span class="inline-flex items-center">
+                            <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Open
+                        </span>
+                    </a>
+                    <a id="context-new-tab" href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <span class="inline-flex items-center">
+                            <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            Open in New Tab
+                        </span>
+                    </a>
+                    <a id="context-download" href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <span class="inline-flex items-center">
+                            <svg class="h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download
+                        </span>
+                    </a>
+                </div>
+            </div>
+    
+            <!-- Upload Section -->
+            <div id="upload-section" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Upload ZIP File</h2>
+                <form id="upload-form" class="space-y-4">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p class="mb-2 text-sm text-gray-500">Drag and drop your ZIP file here</p>
+                        <p class="text-xs text-gray-500">OR</p>
+                        <input id="file-input" type="file" accept=".zip" class="hidden">
+                        <button type="button" id="browse-button" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Browse Files
+                        </button>
+                    </div>
+                    <div id="selected-file" class="hidden py-2 px-3 bg-gray-100 rounded flex items-center justify-between">
+                        <span id="file-name" class="text-sm truncate max-w-md"></span>
+                        <button type="button" id="remove-file" class="text-red-500 hover:text-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                    <button type="submit" id="upload-button" class="w-full md:w-auto px-6 py-2 bg-green-500 text-white font-medium rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        Upload ZIP
+                    </button>
+                </form>
+                <div id="upload-progress" class="hidden mt-4">
+                    <div class="flex items-center">
+                        <div class="mr-3">
+                            <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-600">Processing ZIP file...</span>
+                    </div>
+                </div>
+                <div id="upload-error" class="hidden mt-4 p-3 bg-red-100 text-red-700 rounded-md"></div>
+            </div>
+    
+            <div id="previous-upload-section" class="mt-8 pt-6 border-t border-gray-200 mt-2">
+                <h3 class="text-lg font-semibold mb-4">Access Previous Upload</h3>
+                <form id="retrieve-form">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex-grow">
+                            <label for="unique-id" class="sr-only">Enter Unique ID</label>
+                            <input
+                                type="text"
+                                id="unique-id"
+                                name="unique-id"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter your unique ID (e.g., 507f1f77bcf86cd799439011)"
+                                required
+                            >
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition">
+                                Retrieve Files
+                            </button>
+                        </div>
+                    </div>
+                    <div id="retrieve-error" class="hidden mt-4 p-3 bg-red-100 text-red-700 rounded-md"></div>
+                </form>
+            </div>
+    
+            <!-- Results Section -->
+            <div id="results-section" class="hidden mb-8 p-6 bg-white rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Upload Results</h2>
+                <div id="upload-success" class="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+                    File uploaded and extracted successfully!
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="p-3 bg-gray-100 rounded-md">
+                        <div class="flex justify-between items-center">
+                            <p class="text-sm font-medium">Unique ID:</p>
+                            <button id="copy-button" class="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                                Copy
+                            </button>
+                        </div>
+                        <p id="result-id" class="text-sm text-gray-600">Your unique ID will appear here</p>
+                    </div>
+                    <div class="p-3 bg-gray-100 rounded-md">
+                        <p class="text-sm font-medium">Original Filename:</p>
+                        <p id="result-filename" class="text-sm text-gray-600"></p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <button id="view-files-btn" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                        View Files
+                    </button>
+                    <a id="download-zip-btn" href="#" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download ZIP
+                    </a>
+                    <a id="view-webpage-btn" href="#" target="_blank" class="inline-flex items-center px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        View Webpage
+                    </a>
+                    <button id="upload-new-btn" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Upload New ZIP
+                    </button>
+                </div>
+            </div>
+    
+            <!-- for no webpage alert -->
+            <div id="alert-popup" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div class="bg-white rounded-lg shadow-lg p-6 z-10 max-w-md">
+                    <div class="flex items-center text-amber-500 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold">No Webpage Available</h3>
+                    </div>
+                    <p class="text-gray-700 mb-4">No index.html file was found in the ZIP archive. A valid HTML file is required to view as a webpage.</p>
+                    <div class="flex justify-end">
+                        <button id="close-alert" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- File Explorer Section -->
+            <div id="explorer-section" class="hidden p-6 bg-white rounded-lg shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <button id="back-to-results" class="text-blue-500 hover:text-blue-700 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Results
+                        </button>
+                    </div>
+                    <h2 class="text-xl font-semibold">File Explorer</h2>
+                </div>
+                <div id="breadcrumb" class="flex flex-wrap items-center text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded mb-4">
+                    <span class="mr-2 hover:text-blue-500 cursor-pointer" data-path="">Root</span>
+                </div>
+                <div id="file-loading" class="hidden flex justify-center py-10">
+                    <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                <div id="file-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+            </div>
+    
+            <!-- File Preview Section -->
+            <div id="preview-section" class="hidden p-6 bg-white rounded-lg shadow-md">
+                <div class="flex items-center gap-4 mb-4">
+                    <button id="back-to-explorer" class="text-blue-500 hover:text-blue-700 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back
+                    </button>
+                    <h2 class="text-xl font-semibold" id="preview-title">File Preview</h2>
+                </div>
+                <div class="flex justify-end space-x-3 mb-4">
+                    <button id="preview-open-btn" class="flex items-center px-3 py-1 text-blue-500 hover:text-blue-700 border border-blue-500 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Open in New Tab
+                    </button>
+                    <button id="preview-download-btn" class="flex items-center px-3 py-1 text-green-500 hover:text-green-700 border border-green-500 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download
+                    </button>
+                </div>
+                <div id="preview-content" class="border rounded-md p-4"></div>
+            </div>
+        </div>
+    </main>    
+    <script src="/static/js/zip_uploader/script.js"></script>
+</body>
+</html>
